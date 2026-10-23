@@ -3480,12 +3480,14 @@ body {
 
 
 
+
 /* =====================================
    MOBILE RESPONSIVE FIX
    ===================================== */
 
 @media screen and (max-width: 768px) {
 
+    /* Prevent horizontal scrolling */
     html,
     body {
         width: 100%;
@@ -3493,48 +3495,107 @@ body {
         overflow-x: hidden;
     }
 
+    /* Main layout */
     .layout {
         display: flex !important;
         flex-direction: column !important;
         width: 100% !important;
         min-width: 0 !important;
+        height: auto !important;
+        min-height: 100vh;
+        overflow: visible !important;
     }
 
+    /* Compact mobile sidebar */
     .layout > .app-sidebar {
-        width: 100% !important;
-        min-width: 0 !important;
-        flex: 0 0 auto !important;
-        box-sizing: border-box;
-    }
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
 
-    .layout > main {
         width: 100% !important;
         min-width: 0 !important;
         max-width: 100% !important;
-        padding: 16px !important;
+
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+
+        flex: 0 0 auto !important;
+
+        overflow: visible !important;
+        box-sizing: border-box !important;
+
+        padding: 12px 16px !important;
         margin: 0 !important;
-        box-sizing: border-box;
     }
 
+    /* Sidebar navigation: two columns */
+    .layout > .app-sidebar nav {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Navigation links */
+    .layout > .app-sidebar nav a {
+        display: flex;
+        align-items: center;
+
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+
+        box-sizing: border-box !important;
+        overflow-wrap: anywhere;
+    }
+
+    /* Main dashboard content */
+    .layout > main {
+        position: relative !important;
+
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+
+        height: auto !important;
+        min-height: 0 !important;
+
+        margin: 0 !important;
+        padding: 14px !important;
+
+        box-sizing: border-box !important;
+        overflow-x: hidden;
+    }
+
+    /* Dashboard cards and panels */
     .scorecard-hero,
     .stats-grid,
     .panel {
         width: 100% !important;
-        max-width: 100% !important;
         min-width: 0 !important;
-        box-sizing: border-box;
+        max-width: 100% !important;
+
+        box-sizing: border-box !important;
     }
 
+    /* Stack statistic cards */
     .stats-grid {
         grid-template-columns: minmax(0, 1fr) !important;
     }
 
+    /* Responsive heading */
     .scorecard-hero h1 {
         font-size: clamp(24px, 7vw, 34px);
         line-height: 1.25;
         overflow-wrap: anywhere;
     }
 
+    /* Form controls */
     input,
     select,
     textarea,
@@ -3543,12 +3604,15 @@ body {
         box-sizing: border-box;
     }
 
+    /* Scrollable tables */
     table {
         display: block;
+        width: 100%;
         max-width: 100%;
         overflow-x: auto;
     }
 
+    /* Responsive charts */
     canvas {
         max-width: 100%;
     }
