@@ -1,0 +1,752 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CreditRisk AI | Assessment</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+<div class="layout">
+
+    <aside class="app-sidebar">
+        <a class="sidebar-brand" href="{{ url_for('dashboard') }}">
+            <span class="brand-icon">
+                <i data-lucide="shield-check"></i>
+            </span>
+
+            <span class="brand-text">
+                CreditRisk <span>AI</span>
+                <small>INTELLIGENT RISK ANALYTICS</small>
+            </span>
+        </a>
+
+        <nav class="sidebar-nav" aria-label="Main navigation">
+            <a class="sidebar-link active"
+               href="{{ url_for('dashboard') }}"
+               data-section="dashboard">
+                <span  class="nav-icon">
+                    <i data-lucide="layout-dashboard"></i>
+                </span>
+                <span class="nav-label">Dashboard</span>
+                <i class="nav-arrow" data-lucide="chevron-right"></i>
+            </a>
+
+            <a class="sidebar-link" href="#prediction">
+                <span class="nav-icon">
+                    <i data-lucide="circle-plus"></i>
+                </span>
+                <span class="nav-label">New Prediction</span>
+                <i class="nav-arrow" data-lucide="chevron-right"></i>
+            </a>
+
+            <a class="sidebar-link" href="#result">
+                <span class="nav-icon">
+                    <i data-lucide="file-chart-column"></i>
+                </span>
+                <span class="nav-label">Prediction Result</span>
+                <i class="nav-arrow" data-lucide="chevron-right"></i>
+            </a>
+
+            <a class="sidebar-link" href="#about">
+                <span class="nav-icon">
+                    <i data-lucide="brain-circuit"></i>
+                </span>
+                <span class="nav-label">About Model</span>
+                <i class="nav-arrow" data-lucide="chevron-right"></i>
+            </a>
+
+            <a class="sidebar-link history-link"
+                href="{{ url_for('history') }}">
+                <span class="nav-icon">
+                    <i data-lucide="history"></i>
+                </span>
+                <span class="nav-label">View Prediction History</span>
+                <i class="nav-arrow" data-lucide="chevron-right"></i>
+            </a>
+
+            <a class="sidebar-link" href="#graph-visualize">
+                <span class="nav-icon">
+                    <i data-lucide="chart-no-axes-combined"></i>
+                </span>
+                <span class="nav-label">Graph Visualize</span>
+                <i class="nav-arrow" data-lucide="chevron-right"></i>
+            </a>
+        </nav>
+
+        
+        <!-- Sidebar footer -->
+        <div class="sidebar-footer">
+            <div class="footer-divider"></div>
+
+            <div class="footer-brand-icon">
+                <i data-lucide="brain-circuit"></i>
+            </div>
+
+            <div class="footer-brand-text">
+                <strong>Explainable ML Project</strong>
+                <p>Better insights. Safer lending.</p>
+                <span>
+                    <span class="footer-status-dot"></span>
+                    Powered by Machine Learning
+                </span>
+           </div>
+        </div>
+    </aside>
+
+    
+    <main>
+        <section class="scorecard-hero">
+            <div class="scorecard-intro">
+                <div class="eyebrow">
+                    <span class="status-dot"></span>
+                    ML · FINTECH · RISK MODELING
+                </div>
+
+                <h1>Credit <span>Risk</span><br>Scorecard</h1>
+
+                <p class="hero-subtitle">
+                    ML · FINTECH · CREDIT RISK MODELING
+                </p>
+
+                <p class="hero-description">
+                    Predict loan default probability using a calibrated
+                    XGBoost model, explainable AI, and applicant-level
+                    risk assessment.
+                </p>
+
+                <div class="tech-tags">
+                    <span>PYTHON</span>
+                    <span>SCIKIT-LEARN</span>
+                    <span>PANDAS</span>
+                    <span>XGBOOST</span>
+                </div>
+            </div>
+
+            <div class="scorecard-overview">
+                <div class="score-metric">
+                    <span class="metric-label">MODEL</span>
+                    <strong>XGBoost</strong>
+                    <small>Calibrated prediction pipeline</small>
+                </div>
+
+                <div class="score-metric">
+                    <span class="metric-label">DECISION THRESHOLD</span>
+                    <strong>{{ threshold_percent }}%</strong>
+                    <small>Selected using validation data</small>
+                </div>
+
+                <div class="score-metric">
+                    <span class="metric-label">TOTAL PREDICTIONS</span>
+                    <strong>{{ total_predictions }}</strong>
+                    <small>Assessments recorded</small>
+                </div>
+
+                <div class="score-metric">
+                    <span class="metric-label">MODEL FEATURES</span>
+                    <strong>11</strong>
+                    <small>Input features used by the model</small>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Live Database Statistics -->
+        <section class="stats-grid interactive-stats" id="liveStats">
+            <div class="stat-card total-stat">
+                <div class="stat-topline">
+                    <span class="stat-icon" aria-hidden="true"></span>
+                    <span class="stat-category">DATABASE></span>
+                </div>
+
+                <p> Toatal Predictions</p>
+
+                <h2 class="count-up">
+                    {{ total_predictions }}
+                </h2>
+
+                <span>predictions recorded</span>
+                <div class="stat-accent"></div>
+            </div>
+
+            <div class="stat-card risk-stat">
+                <div class="stat-topline">
+                    <span class="stat-icon" aria-hidden="true"></span>
+                    <span class="stat-category">HIGHER RIS></span>
+                </div>
+
+                <p>Default Risk</p>
+
+                <h2 class="risk-number count-up"
+                    data-count="{{ default_count }}">
+                    {{ default_count }}
+                </h2>
+
+                <span>Higher estimated risk</span>
+
+                <div class="stat-accent"></div>
+            </div>
+
+
+            <div class="stat-card safe-stat">
+                <div class="stat-topline">
+                    <span class="stat-icon" aria-hidden="true">✓</span>
+                    <span class="stat-category">LOWER RISK</span>
+                </div>
+
+                <p>No Default Risk</p>
+
+                <h2 class="safe-number count-up"
+                    data-count="{{ no_default_count }}">
+                    {{ no_default_count }}
+                </h2>
+
+                <span>Lower estimated risk</span>
+
+                <div class="stat-accent"></div>
+            </div>
+
+        </section>
+
+        <!-- Recent Predictions -->
+        <section class="panel recent-predictions-panel" id="recent-predictions">
+            <div class="recent-header">
+                <div>
+                    <span class="recent-eyebrow">ASSESSMENT ACTIVITY></span>
+                    <h2>Recent Predictions</h2>
+                    <p class="muted">
+                        Your latest 5 cradit risk assessments.
+                    </p>
+                </div>
+
+                <div class="recent-live-indicator">
+                    <span class="recent-live-dot"></span>
+                    DATABASE HISTORY
+                </div>
+            </div>
+
+            <div class="table-wrap recent-table-wrap">
+                <table class="history-table recent-interactive-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Applicant Age</th>
+                            <th>Loan Amount</th>
+                            <th>Default Probability</th>
+                            <th>Prediction</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for row in recent_predictions %}
+                        <tr class="recent-data-row">
+                            <td>
+                                <span class="prediction-id">
+                                     #{{ row["id"] }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="loan-amount">
+                                    ${{ "{:,.0f}".format(row["loan_amnt"]) }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {% set probability_percent = row["probability"] * 100 %}
+
+                                <div class="probability-cell">
+                                    <span class="probability-number">
+                                        {{ "%.2f"|format(probability_percent) }}%
+                                    </span>
+
+                                    <div class="probability-track">
+                                        <div  class="probability-fill {% if row['prediction'] == 'Default Risk' %}probability-risk{% else %}probability-safe{% endif %}"
+                                            data-width="{{ probability_percent }}"
+                                            style="width: 0%;">>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                {% if row["prediction"] == "Default Risk" %}
+                                <span class="status-badge risk-badge recent-risk-badge">
+                                    <span class="badge-dot"></span>
+                                    Default Risk
+                                </span>
+                                {% else %}
+                                <span class="status-badge safe-badge recent-safe-badge">
+                                    <span class="badge-dot"></span>
+                                    No Default Risk
+                                </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <span class="prediction-date">
+                                    {{ row["created_at"] }}
+                                </span>
+                            </td>
+                        </tr>
+
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                No predictions yet. Submit the applicant form to begin.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="recent-footer">
+                <span class="recent-footer-note">
+                    Showing the latest 5 assessments
+                </span>
+
+                <a href="{{ url_for('history') }}" class="history-btn recent-view-btn">
+                    View All Predictions
+                    <span aria-hidden="true">→</span>
+                </a>
+            </div>
+        </section>
+
+
+
+
+        <!-- Applicant Form -->
+        <section class="panel" id="prediction">
+            <h2>Applicant Information</h2>
+            <p class="muted">
+                Fill in all fields, then select Predict Risk.
+            </p>
+
+            {% if error %}
+                <p class="error">{{ error }}</p>
+            {% endif %}
+
+            <form action="{{ url_for('predict') }}" method="POST">
+                <div class="form-grid">
+
+                    <div>
+                        <label for="person_age">Applicant Age</label>
+                        <input id="person_age" name="person_age"
+                               type="number" min="18" max="100"
+                               value="{{ form_values.get('person_age', '28') }}"
+                               required>
+                    </div>
+
+                    <div>
+                        <label for="person_income">Annual Income ($)</label>
+                        <input id="person_income" name="person_income"
+                               type="number" min="1"
+                               value="{{ form_values.get('person_income', '60000') }}"
+                               required>
+                    </div>
+
+                    <div>
+                        <label for="person_emp_length">
+                            Employment Length (years)
+                        </label>
+                        <input id="person_emp_length"
+                               name="person_emp_length"
+                               type="number" min="0" max="60"
+                               step="0.1" 
+                               value="{{ form_values.get('person_emp_length', '5') }}"
+                               required>
+                    </div>
+
+                    <div>
+                        <label for="loan_amnt">Loan Amount ($)</label>
+                        <input id="loan_amnt" name="loan_amnt"
+                               type="number" min="1"
+                               value="{{ form_values.get('loan_amnt', '10000') }}"
+                               required>
+                    </div>
+
+                    <div>
+                        <label for="loan_int_rate">Interest Rate (%)</label>
+                        <input id="loan_int_rate" name="loan_int_rate"
+                               type="number" min="0" max="100"
+                               step="0.01" 
+                               value="{{ form_values.get('loan_int_rate', '10.5') }}"
+                               required>
+                    </div>
+
+                    <div>
+                        <label for="loan_percent_income">
+                            Loan / Annual Income Ratio
+                        </label>
+                        <input id="loan_percent_income"
+                               name="loan_percent_income"
+                               type="number" min="0" max="1"
+                               step="0.001" 
+                               value="{{ form_values.get('loan_percent_income', '0.167') }}"
+                               required>
+
+                        <small class="muted">
+                            Example: 10,000 / 60,000 = 0.167
+                        </small>
+                    </div>
+
+                    <div>
+                        <label for="cb_person_cred_hist_length">
+                            Credit History Length (years)
+                        </label>
+                        <input id="cb_person_cred_hist_length"
+                               name="cb_person_cred_hist_length"
+                               type="number" min="0" max="100"
+                               value="{{ form_values.get('cb_person_cred_hist_length', '4') }}"
+                               required>
+                    </div>
+
+                    <div>
+                        <label for="person_home_ownership">
+                            Home Ownership
+                        </label>
+                        <select id="person_home_ownership"
+                                name="person_home_ownership" required>
+                            {% set selected_ownership = form_values.get('person_home_ownership', 'RENT') %}
+                            {% for option in ['RENT', 'MORTGAGE', 'OWN', 'OTHER'] %}
+                                <option value="{{ option }}"
+                                    {% if selected_ownership == option %}selected{% endif %}>
+                                    {{ option }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="loan_intent">Loan Intent</label>
+                        <select id="loan_intent" name="loan_intent" required>
+                            {% set selected_intent = form_values.get('loan_intent', 'PERSONAL') %}
+                            {% for option in ['PERSONAL', 'EDUCATION', 'MEDICAL', 'VENTURE', 'HOMEIMPROVEMENT', 'DEBTCONSOLIDATION'] %}
+                            <option value="{{ option }}"
+                                {% if selected_intent == option %}selected{% endif %}>
+                                {{ option }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="loan_grade">Loan Grade</label>
+                        <select id="loan_grade" name="loan_grade" required>
+                            {% set selected_grade = form_values.get('loan_grade', 'B') %}
+                            {% for option in ['A', 'B', 'C', 'D', 'E', 'F', 'G'] %}
+                            <option value="{{ option }}"
+                                {% if selected_grade == option %}selected{% endif %}>
+                                {{ option }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="cb_person_default_on_file">
+                            Previous Default on File
+                        </label>
+                        <select id="cb_person_default_on_file"
+                                name="cb_person_default_on_file" required>
+                            {% set selected_default = form_values.get('cb_person_default_on_file', 'N') %}
+                            {% for option in ['N', 'Y'] %}
+                                <option value="{{ option }}"
+                                    {% if request.form.get('cb_person_default_on_file', 'N') == option %}selected{% endif %}>
+                                    {{ option }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                </div>
+
+                <button type="submit" id="predictButton" class="predict-button">
+                    <span class="button-text">Predict Credit Risk →</span>
+                    <span class="button-loader" aria-hidden="true"></span>
+                </button>
+            </form>
+        </section>
+
+
+
+        
+        <!-- Prediction Result -->
+        {% if result %}
+        <section  class="panel prediction-result-panel" id="result">
+            <h2>Prediction Result</h2>
+
+            <div class="result {{ result.color }}">
+                <h2>{{ result.label }}</h2>
+
+                <div class="value animated-probability"
+                    id="predictionProbability"
+                    data-probability="{{ result.probability|float }}">
+                    0.00%
+                </div>
+
+                <p>Estimated probability of default</p>
+
+                <p>
+                    Decision threshold:
+                    <strong>{{ result.threshold }}%</strong>
+                </p>
+
+
+                <!-- Animated Probability Gauge -->
+                <div
+                    class="progress-track interactive-progress"
+                    role="progressbar"
+                    aria-label="Estimated probability of default"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="{{ result.probability|float }}">
+                    <div
+                        class="progress-fill animated-progress-fill"
+                        id="predictionProgressFill"
+                        data-probability="{{ result.probability|float }}"
+                        style="width: 0%;">
+                    </div>
+                </div>
+
+                <div class="gauge-labels">
+                    <span>0%</span>
+                    <span>50%</span>
+                    <span>100%</span>
+                </div>
+            </div>
+        </section>
+        
+
+
+            <!-- SHAP Explainable AI -->
+            <div class="panel shap-panel">
+                <h2>Why This Prediction?</h2>
+
+                <p class="muted">
+                    Top 8 features influencing the underlying
+                    XGBoost model score for this applicant.
+                </p>
+
+                {% if result.explanations %}
+                    <div class="table-wrap">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>SHAP Value</th>
+                                    <th>Model Score Impact</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for item in result.explanations %}
+                                <tr>
+                                    <td>{{ item.feature }}</td>
+
+                                    <td>
+                                        <div class="shap-value">
+                                          {{ "%+.4f"|format(item.impact) }}
+                                        </div>
+
+                                        <div class="shap-bar-track">
+                                          <div class="shap-bar {% if item.impact > 0 %}shap-positive{% else %}shap-negative{% endif %}"
+                                              style="width: {{ [((item.impact|abs / 2.0) * 100), 100]|min }}%;">
+                                          </div>
+                                        </div>
+                                    </td>
+
+
+                                    <td>
+                                        {% if item.impact > 0 %}
+                                            <span class="status-badge risk-badge">
+                                                {{ item.direction }}
+                                            </span>
+                                        {% elif item.impact < 0 %}
+                                            <span class="status-badge safe-badge">
+                                                {{ item.direction }}
+                                            </span>
+                                        {% else %}
+                                            <span class="status-badge">
+                                                {{ item.direction }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p class="muted">
+                        <strong>How to read this explanation:</strong>
+                        SHAP shows which features influenced the model's prediction.
+                        Positive values push the base XGBoost model score higher,
+                        while negative values push it lower. These values do not
+                        represent direct percentage changes in the final default
+                        probability. They explain the model's reasoning, not a
+                        guarantee of whether an applicant will repay the loan.
+                    </p>
+                    {% else %}
+                    <p class="muted">
+                        Feature explanations are currently unavailable.
+                        Check the Flask terminal for a SHAP error.
+                    </p>
+                {% endif %}
+            </div>
+
+            <p class="muted">
+                This is a model estimate for educational purposes,
+                not a lending decision.
+            </p>
+            {% endif %}
+
+
+        <!-- Graph Visualize Section -->
+        <section class="panel" id="graph-visualize">
+            <h2>Graph Visualize</h2>
+            <p class="muted">
+              Credit risk model performance and prediction analytics.
+            </p>
+
+            <div class="graph-grid">
+                <div class="graph-card">
+                    <h3>Prediction Distribution</h3>
+                    <canvas id="predictionChart"
+                      data-values='{{ prediction_chart_data | tojson | forceescape }}'
+                    ></canvas>
+                </div>
+
+                <div class="graph-card">
+                   <h3>Default Probability</h3>
+                    <canvas id="probabilityChart"
+                      data-labels='{{ probability_chart_labels | tojson | forceescape }}'
+                      data-values='{{ probability_chart_data | tojson | forceescape }}'
+                     ></canvas>
+                </div>
+
+
+                <!--  Probability Band Analysis  -->
+                <div class="graph-card score-band-card">
+                    <h3>Predicted Default Risk by Probability Band</h3>
+                    <p class="muted">
+                        Current applicant's default probability compared with the
+                        model's decision threshold.
+                    </p>
+
+                    {% if result %}
+                    <div class="current-prediction-summary">
+                        <strong>
+                            {{ "%.2f"|format(result.probability|float) }}%
+                        </strong>
+
+                        <span>
+                            {% if result.probability|float >= result.threshold|float %}
+                                Default Risk 
+                            {% else %}
+                                No Default Risk 
+                            {% endif %}
+                        </span>
+                    </div>
+                    <canvas
+                        id="scoreBandChart"
+                        data-probability="{{ result.probability|float }}"
+                        data-threshold="{{ result.threshold|float }}"
+                        data-prediction="{{ result.label }}"
+                    ></canvas>
+                    {% else %}
+                    <p class="muted">
+                       Submit an applicant's details to display the current prediction.
+                    </p>
+                    {% endif %}
+                </div>
+
+            </div>
+        </section>
+
+
+
+        
+        <!-- Current Applicant: Probability vs Threshold -->
+        {% if result %}
+        <section class="panel" id="current-risk-graph">
+            <h2>Current Applicant Prediction</h2>
+            <p class="section-description">
+                Latest applicant's default probability compared with
+                the model's decision threshold.
+            </p>
+
+            <div class="current-risk-chart">
+                <div class="risk-chart-labels">
+                    <span>Default Probability</span>
+                    <strong>{{ "%.2f"|format(result.probability|float) }}%</strong>
+                </div>
+
+                <div class="risk-scale">
+                    <div
+                        class="risk-probability-fill {% if result.probability|float >= result.threshold|float %}risk-high{% else %}risk-low{% endif %}"
+                        style="width: {{ [[result.probability|float, 0]|max, 100]|min }}%;">
+                    </div>
+
+                    <div
+                        class="risk-threshold-marker"
+                        style="left: {{ [[result.threshold|float, 0]|max, 100]|min }}%;"
+                        title="Decision threshold: {{ result.threshold }}%">
+                    </div>
+                </div>
+
+                <div class="risk-scale-labels">
+                    <span>0%</span>
+                    <span class="threshold-label">
+                        Threshold: {{ result.threshold }}%
+                    </span>
+                    <span>100%</span>
+                </div>
+
+                <p class="risk-chart-explanation">
+                    Prediction:
+                    {% if result.probability|float >= result.threshold|float %}
+                        <strong class="risk-text-high">Default Risk</strong>
+                    {% else %}
+                        <strong class="risk-text-low">No Default Risk</strong>
+                    {% endif %}
+                </p>
+            </div>
+        </section>
+        {% endif %}
+
+
+        <!-- About -->
+        <section class="panel" id="about">
+            <h2>About the Model</h2>
+            <p class="muted">
+                Enter an applicant's financial details to estimate their
+                likelihood of loan default. The calibrated XGBoost model
+                analyzes the submitted information and compares the estimated
+                default probability with the selected decision threshold
+                to classify the applicant as Default Risk or No Default Risk.
+                The prediction is an estimate, not a guarantee of future
+                repayment behavior.
+            </p>
+        </section>
+
+        <footer class="muted">
+            CreditRisk AI · Educational Machine Learning Project
+        </footer>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

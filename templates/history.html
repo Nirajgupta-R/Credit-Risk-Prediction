@@ -1,0 +1,283 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction History | Credit Risk AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: #0b1120;
+            color: #e5e7eb;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+            font-size: 28px;
+        }
+
+        .muted {
+            color: #94a3b8;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 11px 16px;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .button:hover {
+            background: #1d4ed8;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card, .table-card {
+            background: #111c30;
+            border: 1px solid #26344b;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .stat-value {
+            margin-top: 12px;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .green {
+            color: #22c55e;
+        }
+
+        .red {
+            color: #f87171;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1050px;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 1px solid #26344b;
+            white-space: nowrap;
+        }
+
+        th {
+            color: #94a3b8;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .delete-button {
+            background: #7f1d1d;
+            color: #fecaca;
+            border: 1px solid #991b1b;
+            border-radius: 7px;
+            padding: 9px 12px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .delete-button:hover {
+            background: #b91c1c;
+            color: white;
+        }
+
+        .message {
+            padding: 13px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .message.success {
+            color: #bbf7d0;
+            background: #052e16;
+            border: 1px solid #166534;
+        }
+
+        .message.error {
+            color: #fecaca;
+            background: #450a0a;
+            border: 1px solid #991b1b;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 16px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+
+        <header class="topbar">
+            <div>
+                <h1>Prediction History</h1>
+                <p class="muted">
+                    Credit Risk Assessment & Explainable Prediction
+                </p>
+            </div>
+
+            <a class="button" href="{{ url_for('dashboard') }}">
+                ← Back to Dashboard
+            </a>
+        </header>
+
+        <!-- Success and Error Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}" role="status">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <section class="stats">
+            <div class="card">
+                <div class="muted">Total Predictions</div>
+                <div class="stat-value">{{ total_predictions }}</div>
+            </div>
+
+            <div class="card">
+                <div class="muted">Default Risk</div>
+                <div class="stat-value red">{{ default_count }}</div>
+            </div>
+
+            <div class="card">
+                <div class="muted">No Default Risk</div>
+                <div class="stat-value green">{{ no_default_count }}</div>
+            </div>
+        </section>
+
+        <section class="table-card">
+            <h2>Prediction History</h2>
+            <p class="muted">
+                Review your previous predictions or delete an individual record.
+            </p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Age</th>
+                            <th>Annual Income ($)</th>
+                            <th>Loan Amount ($)</th>
+                            <th>Interest Rate</th>
+                            <th>Default Probability</th>
+                            <th>Prediction</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            <td>{{ row["id"] }}</td>
+                            <td>{{ row["person_age"] }}</td>
+                            <td>{{ "{:,.0f}".format(row["person_income"]) }}</td>
+                            <td>{{ "{:,.0f}".format(row["loan_amnt"]) }}</td>
+                            <td>{{ "%.2f"|format(row["loan_int_rate"]) }}%</td>
+                            <td>{{ "%.2f"|format(row["probability"] * 100) }}%</td>
+
+                            <td>
+                                {% if row["prediction"] == "Default Risk" %}
+                                    <span class="status red">Default Risk</span>
+                                {% else %}
+                                    <span class="status green">No Default Risk</span>
+                                {% endif %}
+                            </td>
+
+                            <td>{{ row["created_at"] }}</td>
+
+                            <td>
+                                <form
+                                    action="{{ url_for('delete_prediction', prediction_id=row['id']) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete prediction #{{ row['id'] }}? This action cannot be undone.');"
+                                >
+                                    <button
+                                        type="submit"
+                                        class="delete-button"
+                                    >
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+
+                        {% else %}
+                        <tr>
+                            <td colspan="9" class="empty">
+                                No predictions found. Make your first prediction!
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>
