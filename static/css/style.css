@@ -3481,37 +3481,56 @@ body {
 
 
 
-/* =====================================
-   MOBILE RESPONSIVE FIX
-   ===================================== */
+
+/* =========================================
+   MOBILE RESPONSIVE FIX - FINAL VERSION
+   ========================================= */
 
 @media screen and (max-width: 768px) {
 
-    /* Prevent horizontal scrolling */
-    html,
+    /* 1. Prevent horizontal page overflow */
+    html {
+        width: 100%;
+        max-width: 100%;
+        min-height: 100%;
+        overflow-x: clip;
+    }
+
     body {
         width: 100%;
         max-width: 100%;
-        overflow-x: hidden;
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: clip;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
-    /* Main layout */
+    /* 2. Main page layout */
     .layout {
         display: flex !important;
         flex-direction: column !important;
+        align-items: stretch !important;
+
         width: 100% !important;
+        max-width: 100% !important;
         min-width: 0 !important;
+
         height: auto !important;
-        min-height: 100vh;
+        min-height: 100vh !important;
+        max-height: none !important;
+
         overflow: visible !important;
+        box-sizing: border-box !important;
     }
 
-    /* Compact mobile sidebar */
+    /* 3. Mobile sidebar */
     .layout > .app-sidebar {
         position: relative !important;
         top: auto !important;
-        left: auto !important;
         right: auto !important;
+        bottom: auto !important;
+        left: auto !important;
 
         width: 100% !important;
         min-width: 0 !important;
@@ -3530,31 +3549,33 @@ body {
         margin: 0 !important;
     }
 
-    /* Sidebar navigation: two columns */
+    /* 4. Sidebar navigation */
     .layout > .app-sidebar nav {
         display: grid !important;
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        align-items: stretch;
         gap: 8px !important;
-
-        width: 100% !important;
-        min-width: 0 !important;
-        box-sizing: border-box !important;
-    }
-
-    /* Navigation links */
-    .layout > .app-sidebar nav a {
-        display: flex;
-        align-items: center;
 
         width: 100% !important;
         min-width: 0 !important;
         max-width: 100% !important;
 
         box-sizing: border-box !important;
-        overflow-wrap: anywhere;
     }
 
-    /* Main dashboard content */
+    /* 5. Sidebar links */
+    .layout > .app-sidebar nav a {
+        display: flex;
+        align-items: center;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-wrap: anywhere;
+        white-space: normal;
+        touch-action: manipulation;
+    }
+
+    /* 6. Main content */
     .layout > main {
         position: relative !important;
 
@@ -3564,56 +3585,72 @@ body {
 
         height: auto !important;
         min-height: 0 !important;
+        max-height: none !important;
+
+        flex: 1 1 auto !important;
 
         margin: 0 !important;
         padding: 14px !important;
 
+        overflow: visible !important;
         box-sizing: border-box !important;
-        overflow-x: hidden;
     }
 
-    /* Dashboard cards and panels */
+    /* 7. Dashboard cards and panels */
     .scorecard-hero,
     .stats-grid,
     .panel {
         width: 100% !important;
         min-width: 0 !important;
         max-width: 100% !important;
-
         box-sizing: border-box !important;
     }
 
-    /* Stack statistic cards */
+    /* 8. Stack statistic cards */
     .stats-grid {
         grid-template-columns: minmax(0, 1fr) !important;
     }
 
-    /* Responsive heading */
+    /* 9. Responsive headings */
     .scorecard-hero h1 {
         font-size: clamp(24px, 7vw, 34px);
         line-height: 1.25;
         overflow-wrap: anywhere;
     }
 
-    /* Form controls */
+    /* 10. Form controls */
     input,
     select,
     textarea,
     button {
         max-width: 100%;
         box-sizing: border-box;
+        touch-action: manipulation;
     }
 
-    /* Scrollable tables */
+    /* 11. Tables can scroll horizontally */
     table {
-        display: block;
+        max-width: 100%;
+        border-collapse: collapse;
+    }
+
+    /* Use a wrapper around wide tables when available */
+    .table-responsive {
         width: 100%;
         max-width: 100%;
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
-    /* Responsive charts */
+    /* 12. Charts */
     canvas {
+        max-width: 100%;
+    }
+
+    /* 13. Avoid oversized media */
+    img,
+    video,
+    iframe {
         max-width: 100%;
     }
 }
